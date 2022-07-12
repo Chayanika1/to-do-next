@@ -1,9 +1,12 @@
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import styles from "../styles/Header.module.css";
 
 function Header() {
   const [content, setName] = useState(" ");
-  const [getData, setGetData] = useState(" ");
+  const [getData, setGetData] = useState([]);
+
+  //navigated to edit page
 
   //post data
   const addTodo = () => {
@@ -13,12 +16,7 @@ function Header() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ content }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        alert("done");
-      });
+    }).then((res) => res.json());
   };
 
   //get data
@@ -29,6 +27,13 @@ function Header() {
       .then((data) => setGetData(data));
   }, []);
 
+  //delete data
+
+  const deleteIteam = (id) => {
+    fetch(`http://localhost:3000/api/users/${id}`, {
+      method: "DELETE",
+    }).then((res) => res.json());
+  };
   return (
     <div className={styles.container}>
       <h1>hello js</h1>
@@ -39,10 +44,21 @@ function Header() {
       </div>
       <hr />
       <div>
-        {getData?.map((gd) => {
+        {getData?.map((g) => {
           return (
-            <div key={gd._id}>
-              <h3>{gd.content}</h3>
+            <div className={styles.content} key={g._id}>
+              <h3 className={styles.heading}>{g.content}</h3>
+              <div>
+                <button
+                  onClick={() => deleteIteam(g._id)}
+                  className={styles.del}
+                >
+                  delete
+                </button>
+                <Link href={`/edit/${g._id}`}>
+                  <button>edit</button>
+                </Link>
+              </div>
             </div>
           );
         })}
